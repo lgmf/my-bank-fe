@@ -1,7 +1,7 @@
 import { Button, ButtonProps, CircularProgress } from "@mui/material";
 
 interface ProgressButton extends ButtonProps {
-  loading: boolean;
+  loading?: boolean;
 }
 
 export default function ProgressButton({

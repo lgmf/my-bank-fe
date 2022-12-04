@@ -1,3 +1,4 @@
+import { Account } from "./Account";
 
 export interface User {
   id: string;
@@ -6,3 +7,6 @@ export interface User {
   token: string;
 }
 
+export interface UserResult extends Omit<User, "token"> {
+  account: Omit<Account, "username">;
+}
