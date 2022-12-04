@@ -1,14 +1,13 @@
 import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useState } from "react";
-import { useMutation } from "react-query";
 
 import ProgressButton from "../components/ProgressButton";
+import UsersDataGrid from "../components/UsersDataGrid";
 import useSnackbar from "../context/SnackbarContext";
-import useRefreshServerSideProps from "../hook/useRefreshServerSideProps";
+import useAccountBalance from "../hook/useAccountBalance";
+import useTransferMutation from "../hook/useTransferMutation";
 import PrivateLayout from "../layout/PrivateLayout";
 import accountService from "../services/account";
-import transactionService from "../services/transaction";
 import userService from "../services/user";
 import { User, UserResult } from "../types/User";
 import { ensureAuth } from "../utils/ensureAuth";
@@ -19,23 +18,22 @@ interface HomeProps {
   users: UserResult[];
 }
 
-const columns: GridColDef[] = [
-  { field: "name", headerName: "Name" },
-  { field: "username", headerName: "Username" },
-];
-
 export default function Home({
   accountBalance,
   authenticatedUser,
   users,
 }: HomeProps) {
   const snackbar = useSnackbar();
-  const refresh = useRefreshServerSideProps();
 
-  const transferMutation = useMutation(transactionService.transfer, {
+  const $accountBalance = useAccountBalance(
+    authenticatedUser.token,
+    accountBalance
+  );
+
+  const transferMutation = useTransferMutation({
     onSuccess: () => {
       snackbar.success("Transfer succeeded!");
-      refresh();
+      $accountBalance.refetch();
     },
     onError: () => {
       snackbar.error("Failed to complete the transfer. Try again later");
@@ -45,16 +43,10 @@ export default function Home({
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [amount, setAmount] = useState<number>(0);
 
-  const rows = users
-    .filter((user) => user.id !== authenticatedUser.id)
-    .map((user) => ({
-      id: user.id,
-      username: user.username,
-      name: user.name,
-    }));
+  const balance = $accountBalance.data || accountBalance;
 
   const isTransferButtonDisabled =
-    !selectedUserId || amount <= 0 || amount > accountBalance;
+    !selectedUserId || amount <= 0 || amount > balance;
 
   function handleTransfer() {
     transferMutation.mutate({
@@ -74,7 +66,7 @@ export default function Home({
             </Typography>
 
             <Typography variant="body2">
-              Your balance is, <strong>R$ {accountBalance}</strong>
+              Your balance is, <strong>R$ {balance}</strong>
             </Typography>
           </CardContent>
         </Card>
@@ -112,18 +104,11 @@ export default function Home({
             </ProgressButton>
           </Box>
 
-          <DataGrid
-            checkboxSelection
-            disableSelectionOnClick
-            pageSize={5}
-            rowsPerPageOptions={[5]}
-            rows={rows}
-            columns={columns}
-            selectionModel={[selectedUserId]}
-            onSelectionModelChange={(selected) => {
-              const next = selected.filter((rowId) => rowId !== selectedUserId);
-
-              setSelectedUserId(next[0] as string);
+          <UsersDataGrid
+            users={users.filter((user) => user.id !== authenticatedUser.id)}
+            selectedUserId={selectedUserId}
+            onSelectionChange={(next) => {
+              setSelectedUserId(next);
             }}
           />
         </Box>
