@@ -41,7 +41,7 @@ export default function Login() {
           password: values.password,
         });
 
-        Router.push("/");
+        await Router.push("/");
       } catch {
         setError("Invalid username or password");
       }

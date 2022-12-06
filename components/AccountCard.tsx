@@ -1,4 +1,4 @@
-import { Box, Paper, Typography, useTheme } from "@mui/material";
+import { Paper, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
 
 import brlFlag from "../assets/brl-flag.svg";
