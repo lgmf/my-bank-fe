@@ -1,12 +1,15 @@
-import httpClient from "../lib/http-client";
 import { Account } from "../types/Account";
+import BaseService from "./base";
 
-function retrieve(token: string) {
-  return httpClient.get<{ account: Account }>("/accounts", token);
+class AccountService extends BaseService {
+  async retrieve() {
+    const { account } = await this.authRequest<{ account: Account }>({
+      method: "GET",
+      path: "/accounts",
+    });
+
+    return account;
+  }
 }
 
-const accountService = {
-  retrieve,
-};
-
-export default accountService;
+export default AccountService;

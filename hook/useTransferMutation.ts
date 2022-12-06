@@ -1,10 +1,12 @@
 import { useMutation } from "react-query";
-import transactionService from "../services/transaction";
+import TransactionService from "../services/transaction";
 
 interface MutationProps {
   onSuccess?: () => void;
   onError?: () => void;
 }
+
+const transactionService = new TransactionService();
 
 export default function useTransferMutation({
   onSuccess,

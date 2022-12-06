@@ -4,8 +4,8 @@ import { User } from "../types/User";
 type SetCookiesParams = Parameters<typeof setCookie>;
 type ParseCookieParams = Parameters<typeof parseCookies>;
 
-type PageResContext = SetCookiesParams[0];
-type PageReqContext = ParseCookieParams[0];
+export type PageResContext = SetCookiesParams[0];
+export type PageReqContext = ParseCookieParams[0];
 
 class UserStorage {
   private static readonly key = "my_bank.user";

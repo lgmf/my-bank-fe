@@ -20,8 +20,8 @@ import SecondaryText from "../../components/SecondaryText";
 import useSnackbar from "../../context/SnackbarContext";
 import useTransferMutation from "../../hook/useTransferMutation";
 import PrivateLayout from "../../layout/PrivateLayout";
-import accountService from "../../services/account";
-import userService from "../../services/user";
+import AccountService from "../../services/account";
+import UserService from "../../services/user";
 import { User, UserResult } from "../../types/User";
 import { ensureAuth } from "../../utils/ensureAuth";
 
@@ -67,7 +67,6 @@ export default function TransferPage({
       await transferMutation.mutateAsync({
         amount: values.amount,
         recipientUserId: values.recipientUserId,
-        token: authenticatedUser.token,
       });
 
       await Router.push("/transfer/success");
@@ -136,6 +135,7 @@ export default function TransferPage({
 
         <CardActions sx={{ display: "flex", justifyContent: "flex-end" }}>
           <ProgressButton
+            type="submit"
             form="transfer-form"
             disabled={!formik.isValid || !formik.dirty}
             variant="contained"
@@ -151,10 +151,13 @@ export default function TransferPage({
   );
 }
 
-export const getServerSideProps = ensureAuth(async ({ user }) => {
-  const [{ account }, { results: users }] = await Promise.all([
-    accountService.retrieve(user.token),
-    userService.list(user.token),
+export const getServerSideProps = ensureAuth(async ({ ctx, user }) => {
+  const accountService = new AccountService(ctx);
+  const userService = new UserService(ctx);
+
+  const [account, { results: users }] = await Promise.all([
+    accountService.retrieve(),
+    userService.list(),
   ]);
 
   return {

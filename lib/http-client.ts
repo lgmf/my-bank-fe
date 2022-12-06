@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from "axios";
 
 type Methods = "GET" | "POST";
 
-interface RequestConfig<B> {
+export interface RequestConfig<B> {
   method: Methods;
   path: string;
   headers?: Record<string, string>;
@@ -10,14 +10,6 @@ interface RequestConfig<B> {
 }
 
 class HttpClient {
-  private static makeAuthorizationHeader(token?: string) {
-    if (!token) {
-      return undefined;
-    }
-
-    return { Authorization: `Bearer ${token}` };
-  }
-
   private readonly client: AxiosInstance;
 
   constructor() {
@@ -26,7 +18,7 @@ class HttpClient {
     });
   }
 
-  private async request<R, B = unknown>({
+  async request<R, B = unknown>({
     method,
     path,
     body,
@@ -42,21 +34,12 @@ class HttpClient {
     return res.data;
   }
 
-  get<R>(path: string, token?: string) {
-    return this.request<R>({
-      method: "GET",
-      path,
-      headers: HttpClient.makeAuthorizationHeader(token),
-    });
+  get<R>(config: Omit<RequestConfig<never>, "method" | "body">) {
+    return this.request<R>({ ...config, method: "GET" });
   }
 
-  post<R, B = unknown>(path: string, body?: B, token?: string) {
-    return this.request<R, B>({
-      method: "POST",
-      path,
-      body,
-      headers: HttpClient.makeAuthorizationHeader(token),
-    });
+  post<R, B = unknown>(config: Omit<RequestConfig<B>, "method">) {
+    return this.request<R, B>({ ...config, method: "POST" });
   }
 }
 

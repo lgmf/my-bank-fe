@@ -1,12 +1,31 @@
-import httpClient from "../lib/http-client";
-import { UserResult } from "../types/User";
+import { User, UserResult } from "../types/User";
+import BaseService from "./base";
 
-function list(token: string) {
-  return httpClient.get<{ results: UserResult[] }>("/users", token);
+interface SignInBody {
+  username: string;
+  password: string;
 }
 
-const userService = {
-  list,
-};
+class UserService extends BaseService {
+  list() {
+    return this.authRequest<{ results: UserResult[] }>({
+      method: "GET",
+      path: "/users",
+    });
+  }
 
-export default userService;
+  async signIn({ username, password }: SignInBody) {
+    const { user } = await this.request<{ user: User }>({
+      method: "POST",
+      path: "/token",
+      body: {
+        username,
+        password,
+      },
+    });
+
+    return user;
+  }
+}
+
+export default UserService;

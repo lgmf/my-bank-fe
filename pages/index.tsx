@@ -1,4 +1,4 @@
-import { Box, Divider, Typography, useTheme } from "@mui/material";
+import { Box, Divider } from "@mui/material";
 import AccountCard from "../components/AccountCard";
 import ButtonLink from "../components/ButtonLink";
 import PageTitle from "../components/PageTitle";
@@ -6,8 +6,8 @@ import SecondaryText from "../components/SecondaryText";
 
 import TransactionList from "../components/TransactionList";
 import PrivateLayout from "../layout/PrivateLayout";
-import accountService from "../services/account";
-import transactionService from "../services/transaction";
+import AccountService from "../services/account";
+import TransactionService from "../services/transaction";
 import { Transaction } from "../types/Transaction";
 import { User } from "../types/User";
 import { ensureAuth } from "../utils/ensureAuth";
@@ -23,8 +23,6 @@ export default function HomePage({
   authenticatedUser,
   transactions,
 }: HomePageProps) {
-  const theme = useTheme();
-
   return (
     <PrivateLayout documentTitle="Home" user={authenticatedUser}>
       <PageTitle
@@ -39,9 +37,9 @@ export default function HomePage({
       <Box display="flex" flexDirection="column" gap={3}>
         <AccountCard balance={accountBalance} />
 
-        <Box sx={{ height: 400, width: "100%" }}>
+        <Box>
           <SecondaryText gutterBottom variant="body2">
-            Recent Transactions
+            Transactions
           </SecondaryText>
 
           <Divider />
@@ -56,10 +54,13 @@ export default function HomePage({
   );
 }
 
-export const getServerSideProps = ensureAuth(async ({ user }) => {
-  const [{ account }, { results: transactions }] = await Promise.all([
-    accountService.retrieve(user.token),
-    transactionService.list(user.token),
+export const getServerSideProps = ensureAuth(async ({ user, ctx }) => {
+  const accountService = new AccountService(ctx);
+  const transactionService = new TransactionService(ctx);
+
+  const [account, { results: transactions }] = await Promise.all([
+    accountService.retrieve(),
+    transactionService.list({ limit: 5 }),
   ]);
 
   return {

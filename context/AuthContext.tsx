@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useContext, useState } from "react";
+import { useMutation } from "react-query";
 import UserStorage from "../lib/user-storage";
-import signInService from "../services/signIn";
+import UserService from "../services/user";
 import { User } from "../types/User";
 
 interface SignInData {
@@ -11,7 +12,7 @@ interface SignInData {
 interface AuthState {
   isAuthenticated: boolean;
   user: User | null;
-  signIn: (data: SignInData) => Promise<User>;
+  signIn: (data: SignInData) => Promise<void>;
 }
 
 interface AuthProviderProps {
@@ -25,6 +26,8 @@ const initialState: AuthState = {
 };
 
 const AuthContext = createContext(initialState);
+
+const userService = new UserService();
 
 export function useAuth() {
   const auth = useContext(AuthContext);
@@ -41,11 +44,16 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
   const isAuthenticated = Boolean(user);
 
+  const signInMutation = useMutation(userService.signIn, {
+    onSuccess: (user) => {
+      UserStorage.setItem(user);
+      setUser(user);
+    },
+    onError: () => {},
+  });
+
   async function signIn({ username, password }: SignInData) {
-    const { user } = await signInService.signIn({ username, password });
-    UserStorage.setItem(user);
-    setUser(user);
-    return user;
+    await signInMutation.mutateAsync({ username, password });
   }
 
   return (
