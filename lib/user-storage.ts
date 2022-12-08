@@ -1,4 +1,4 @@
-import { parseCookies, setCookie } from "nookies";
+import { parseCookies, setCookie, destroyCookie } from "nookies";
 import { User } from "../types/User";
 
 type SetCookiesParams = Parameters<typeof setCookie>;
@@ -31,6 +31,10 @@ class UserStorage {
     } catch (error) {
       return null;
     }
+  }
+
+  static removeItem(ctx?: PageResContext) {
+    destroyCookie(ctx, UserStorage.key);
   }
 
   private constructor() {}

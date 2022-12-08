@@ -18,11 +18,11 @@ class BaseService {
     return user.token;
   }
 
-  request<R, B = unknown>(config: RequestConfig<B>) {
+  request = <R, B = unknown>(config: RequestConfig<B>) => {
     return httpClient.request<R, B>(config);
-  }
+  };
 
-  authRequest<R, B = unknown>(config: RequestConfig<B>) {
+  authRequest = <R, B = unknown>(config: RequestConfig<B>) => {
     if (!this.token) {
       throw new Error("token not found");
     }
@@ -34,7 +34,7 @@ class BaseService {
         Authorization: `Bearer ${this.token}`,
       },
     });
-  }
+  };
 }
 
 export default BaseService;

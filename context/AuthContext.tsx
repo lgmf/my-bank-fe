@@ -13,6 +13,7 @@ interface AuthState {
   isAuthenticated: boolean;
   user: User | null;
   signIn: (data: SignInData) => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
 interface AuthProviderProps {
@@ -23,6 +24,7 @@ const initialState: AuthState = {
   isAuthenticated: false,
   user: null,
   signIn: () => Promise.reject(new Error("Method not implemented")),
+  signOut: () => Promise.reject(new Error("Method not implemented")),
 };
 
 const AuthContext = createContext(initialState);
@@ -56,12 +58,18 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     await signInMutation.mutateAsync({ username, password });
   }
 
+  async function signOut() {
+    UserStorage.removeItem();
+    setUser(null);
+  }
+
   return (
     <AuthContext.Provider
       value={{
         isAuthenticated,
         user,
         signIn,
+        signOut,
       }}
     >
       {children}

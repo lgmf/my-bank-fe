@@ -7,14 +7,14 @@ interface SignInBody {
 }
 
 class UserService extends BaseService {
-  list() {
+  list = () => {
     return this.authRequest<{ results: UserResult[] }>({
       method: "GET",
       path: "/users",
     });
-  }
+  };
 
-  async signIn({ username, password }: SignInBody) {
+  signIn = async ({ username, password }: SignInBody) => {
     const { user } = await this.request<{ user: User }>({
       method: "POST",
       path: "/token",
@@ -25,7 +25,7 @@ class UserService extends BaseService {
     });
 
     return user;
-  }
+  };
 }
 
 export default UserService;

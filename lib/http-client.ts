@@ -14,7 +14,7 @@ class HttpClient {
 
   constructor() {
     this.client = axios.create({
-      baseURL: "http://localhost:7000",
+      baseURL: process.env.NEXT_PUBLIC_API_URL,
     });
   }
 

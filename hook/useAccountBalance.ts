@@ -1,12 +1,14 @@
 import { useQuery } from "react-query";
 
-import accountService from "../services/account";
+import AccountService from "../services/account";
 
-export default function useAccountBalance(token: string, initialData?: number) {
+const accountService = new AccountService();
+
+export default function useAccountBalance(initialData?: number) {
   const $accountBalance = useQuery(
     ["ACCOUNT_BALANCE"],
     async () => {
-      const { account } = await accountService.retrieve(token);
+      const account = await accountService.retrieve();
       return account.balance;
     },
     {
