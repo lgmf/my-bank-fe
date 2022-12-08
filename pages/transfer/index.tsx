@@ -32,8 +32,8 @@ interface TransferPageProps {
 }
 
 const TransferForm = styled("form")({
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr",
+  display: "flex",
+  flexDirection: "column",
   gap: 12,
 });
 
@@ -88,11 +88,11 @@ export default function TransferPage({
     <PrivateLayout documentTitle="Transfer" user={authenticatedUser}>
       <PageTitle title="Send Money" />
 
-      <Card>
+      <Card sx={{ maxWidth: "50%", margin: "0 auto" }}>
         <CardContent>
-          <SecondaryText variant="subtitle1" sx={{ marginBottom: 3 }}>
+          <Typography variant="h6" sx={{ marginBottom: 3 }}>
             Available balance <strong>R$ {balance}</strong>
-          </SecondaryText>
+          </Typography>
 
           <TransferForm id="transfer-form">
             <TextField
@@ -126,10 +126,10 @@ export default function TransferPage({
           <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
 
           {formik.dirty && formik.isValid && (
-            <Typography gutterBottom variant="body2" margin="0 auto">
+            <SecondaryText gutterBottom variant="body2" margin="0 auto">
               You are sending <strong>R$ {formik.values.amount}</strong> to{" "}
               <strong>{selectedUserOption?.label}</strong>
-            </Typography>
+            </SecondaryText>
           )}
         </CardContent>
 

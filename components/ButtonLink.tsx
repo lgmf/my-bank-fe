@@ -11,7 +11,7 @@ export default function ButtonLink({
   ...rest
 }: ButtonLinkProps) {
   return (
-    <NextLink href={href}>
+    <NextLink href={href} tabIndex={-1}>
       <Button {...rest}>{children}</Button>
     </NextLink>
   );
