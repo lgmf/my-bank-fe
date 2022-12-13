@@ -52,7 +52,7 @@ export default function TransactionListItem({
   }
 
   return (
-    <ListItem key={id}>
+    <ListItem>
       <TransactionListAvatar type={avatarType} />
 
       <ListItemText primary={recipientName} secondary={date} />

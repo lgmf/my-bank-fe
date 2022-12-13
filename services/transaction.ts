@@ -1,3 +1,5 @@
+import { myBankApiHttpClient } from "../lib/http-client";
+import { PageReqContext } from "../lib/user-storage";
 import { Search, SearchProps } from "../types/Api";
 import { Transaction } from "../types/Transaction";
 import BaseService from "./base";
@@ -8,6 +10,10 @@ interface TransferBody {
 }
 
 class TransactionService extends BaseService {
+  constructor(ctx: PageReqContext = undefined) {
+    super(myBankApiHttpClient, ctx);
+  }
+
   transfer = ({ amount, recipientUserId }: TransferBody) => {
     return this.authRequest<void>({
       method: "POST",

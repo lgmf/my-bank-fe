@@ -1,4 +1,10 @@
-import { createContext, ReactNode, useContext, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useMutation } from "react-query";
 import UserStorage from "../lib/user-storage";
 import UserService from "../services/user";
@@ -42,7 +48,7 @@ export function useAuth() {
 }
 
 export default function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<User | null>(UserStorage.getItem());
+  const [user, setUser] = useState<User | null>(null);
 
   const isAuthenticated = Boolean(user);
 
@@ -62,6 +68,10 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     UserStorage.removeItem();
     setUser(null);
   }
+
+  useEffect(() => {
+    setUser(UserStorage.getItem());
+  }, []);
 
   return (
     <AuthContext.Provider

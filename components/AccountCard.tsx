@@ -1,14 +1,14 @@
-import { Paper, Typography, useTheme } from "@mui/material";
+import { Paper, Skeleton, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
 
 import brlFlag from "../assets/brl-flag.svg";
+import useAccountBalance from "../hooks/useAccountBalance";
 
-interface AccountCardProps {
-  balance: number;
-}
-
-export default function AccountCard({ balance }: AccountCardProps) {
+export default function AccountCard() {
   const theme = useTheme();
+  const $accountBalance = useAccountBalance();
+
+  const balance = $accountBalance.data;
 
   return (
     <Paper
@@ -31,7 +31,11 @@ export default function AccountCard({ balance }: AccountCardProps) {
 
       <footer>
         <Typography variant="h5" fontWeight="bold">
-          R$ {balance}
+          {balance !== undefined ? (
+            `R$ ${balance}`
+          ) : (
+            <Skeleton animation="wave" />
+          )}
         </Typography>
 
         <Typography variant="caption">Brazilian real</Typography>

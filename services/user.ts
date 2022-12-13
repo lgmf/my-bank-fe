@@ -1,3 +1,5 @@
+import { myBankApiHttpClient } from "../lib/http-client";
+import { PageReqContext } from "../lib/user-storage";
 import { User, UserResult } from "../types/User";
 import BaseService from "./base";
 
@@ -7,6 +9,10 @@ interface SignInBody {
 }
 
 class UserService extends BaseService {
+  constructor(ctx: PageReqContext = undefined) {
+    super(myBankApiHttpClient, ctx);
+  }
+
   list = () => {
     return this.authRequest<{ results: UserResult[] }>({
       method: "GET",

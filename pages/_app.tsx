@@ -28,6 +28,8 @@ export default function App({ Component, pageProps }: AppProps) {
     };
   }, []);
 
+  console.log("rendered the app");
+
   return (
     <LocaleProvider>
       <QueryClientProvider client={queryClient}>

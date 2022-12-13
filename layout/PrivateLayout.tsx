@@ -1,21 +1,22 @@
 import { Container } from "@mui/material";
-import Head from "next/head";
 import { ReactNode } from "react";
+import Head from "next/head";
 
-import { User } from "../types/User";
+import { useAuth } from "../context/AuthContext";
 import Header from "./Header";
 
 interface HomeProps {
   documentTitle: string;
-  user: User;
   children: ReactNode;
 }
 
-export default function PrivateLayout({
-  children,
-  documentTitle,
-  user,
-}: HomeProps) {
+export default function PrivateLayout({ children, documentTitle }: HomeProps) {
+  const { user } = useAuth();
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <>
       <Head>
@@ -24,7 +25,7 @@ export default function PrivateLayout({
 
       <Header user={user} />
 
-      <Container maxWidth="md" sx={{ height: "100%", paddingBottom: 32 }}>
+      <Container maxWidth="md" sx={{ height: "100%", paddingBottom: 4 }}>
         <main>{children}</main>
       </Container>
 

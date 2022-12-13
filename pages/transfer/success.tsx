@@ -1,11 +1,4 @@
-import {
-  Autocomplete,
-  Box,
-  styled,
-  TextField,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Image from "next/image";
 
 import paymentImage from "../../assets/payment-svgrepo-com.svg";
@@ -13,20 +6,11 @@ import paymentImage from "../../assets/payment-svgrepo-com.svg";
 import ButtonLink from "../../components/ButtonLink";
 import SecondaryText from "../../components/SecondaryText";
 import PrivateLayout from "../../layout/PrivateLayout";
-import { User } from "../../types/User";
 import { ensureAuth } from "../../utils/ensureAuth";
 
-interface TransferSuccessPageProps {
-  authenticatedUser: User;
-}
-
-export default function TransferSuccessPage({
-  authenticatedUser,
-}: TransferSuccessPageProps) {
-  const theme = useTheme();
-
+export default function TransferSuccessPage() {
   return (
-    <PrivateLayout documentTitle="Transfer Success" user={authenticatedUser}>
+    <PrivateLayout documentTitle="Transfer Success">
       <Box display="flex" flexDirection="column" alignItems="center" gap={4}>
         <Image src={paymentImage} width={250} height={250} alt="" />
 
@@ -48,10 +32,4 @@ export default function TransferSuccessPage({
   );
 }
 
-export const getServerSideProps = ensureAuth(async ({ user }) => {
-  return {
-    props: {
-      authenticatedUser: user,
-    },
-  };
-});
+export const getServerSideProps = ensureAuth();

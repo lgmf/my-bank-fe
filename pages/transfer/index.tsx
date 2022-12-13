@@ -4,6 +4,7 @@ import {
   CardActions,
   CardContent,
   Divider,
+  Skeleton,
   styled,
   TextField,
   Typography,
@@ -18,17 +19,15 @@ import ProgressButton from "../../components/ProgressButton";
 import SecondaryText from "../../components/SecondaryText";
 
 import useSnackbar from "../../context/SnackbarContext";
+import useAccountBalance from "../../hooks/useAccountBalance";
 import useTransferMutation from "../../hooks/useTransferMutation";
+import useUsers from "../../hooks/useUsers";
 import PrivateLayout from "../../layout/PrivateLayout";
-import AccountService from "../../services/account";
-import UserService from "../../services/user";
-import { User, UserResult } from "../../types/User";
+import { User } from "../../types/User";
 import { ensureAuth } from "../../utils/ensureAuth";
 
 interface TransferPageProps {
   authenticatedUser: User;
-  balance: number;
-  users: UserResult[];
 }
 
 const TransferForm = styled("form")({
@@ -44,11 +43,7 @@ function createValidationSchema(balance: number) {
   });
 }
 
-export default function TransferPage({
-  balance,
-  authenticatedUser,
-  users,
-}: TransferPageProps) {
+export default function TransferPage({ authenticatedUser }: TransferPageProps) {
   const snackbar = useSnackbar();
 
   const transferMutation = useTransferMutation({
@@ -57,12 +52,16 @@ export default function TransferPage({
     },
   });
 
+  const $accountBalance = useAccountBalance();
+
+  const balance = $accountBalance.data;
+
   const formik = useFormik({
     initialValues: {
       amount: 0,
       recipientUserId: "",
     },
-    validationSchema: createValidationSchema(balance),
+    validationSchema: createValidationSchema(balance ?? 0),
     onSubmit: async (values) => {
       await transferMutation.mutateAsync({
         amount: values.amount,
@@ -72,6 +71,10 @@ export default function TransferPage({
       await Router.push("/transfer/success");
     },
   });
+
+  const $users = useUsers();
+
+  const users = $users.data || [];
 
   const userOptions = users
     .filter((user) => user.id !== authenticatedUser.id)
@@ -85,14 +88,20 @@ export default function TransferPage({
   );
 
   return (
-    <PrivateLayout documentTitle="Transfer" user={authenticatedUser}>
+    <PrivateLayout documentTitle="Transfer">
       <PageTitle title="Send Money" />
 
       <Card sx={{ maxWidth: "50%", margin: "0 auto" }}>
         <CardContent>
-          <Typography variant="h6" sx={{ marginBottom: 3 }}>
-            Available balance <strong>R$ {balance}</strong>
-          </Typography>
+          {balance !== undefined ? (
+            <Typography variant="h6" sx={{ marginBottom: 3 }}>
+              Available balance <strong>R$ {balance}</strong>
+            </Typography>
+          ) : (
+            <Typography variant="h6" sx={{ marginBottom: 3 }}>
+              <Skeleton animation="wave" />
+            </Typography>
+          )}
 
           <TransferForm id="transfer-form">
             <TextField
@@ -151,20 +160,10 @@ export default function TransferPage({
   );
 }
 
-export const getServerSideProps = ensureAuth(async ({ ctx, user }) => {
-  const accountService = new AccountService(ctx);
-  const userService = new UserService(ctx);
-
-  const [account, { results: users }] = await Promise.all([
-    accountService.retrieve(),
-    userService.list(),
-  ]);
-
+export const getServerSideProps = ensureAuth(async (user) => {
   return {
     props: {
       authenticatedUser: user,
-      balance: account.balance,
-      users,
     },
   };
 });

@@ -1,15 +1,29 @@
-import { NextPageContext } from "next";
+import {
+  GetServerSideProps,
+  GetServerSidePropsContext,
+  GetServerSidePropsResult,
+  PreviewData,
+} from "next";
+import { ParsedUrlQuery } from "querystring";
 
 import UserStorage from "../lib/user-storage";
 import { User } from "../types/User";
 
-type GetServerSidePropsFn = (params: {
-  ctx: NextPageContext;
-  user: User;
-}) => Promise<unknown>;
+type AuthGetServerSideProps<
+  P extends { [key: string]: any } = { [key: string]: any },
+  Q extends ParsedUrlQuery = ParsedUrlQuery,
+  D extends PreviewData = PreviewData
+> = (
+  user: User,
+  context: GetServerSidePropsContext<Q, D>
+) => Promise<GetServerSidePropsResult<P>>;
 
-export function ensureAuth(fn: GetServerSidePropsFn) {
-  async function getServerSideProps(ctx: NextPageContext) {
+const defaultFn: AuthGetServerSideProps = async () => ({ props: {} });
+
+export function ensureAuth(
+  fn: AuthGetServerSideProps = defaultFn
+): GetServerSideProps {
+  const getServerSideProps: GetServerSideProps = async (ctx) => {
     const user = UserStorage.getItem(ctx);
 
     if (!user) {
@@ -21,8 +35,8 @@ export function ensureAuth(fn: GetServerSidePropsFn) {
       };
     }
 
-    return fn({ ctx, user });
-  }
+    return fn(user, ctx);
+  };
 
   return getServerSideProps;
 }
