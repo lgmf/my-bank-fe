@@ -18,7 +18,7 @@ import ProgressButton from "../../components/ProgressButton";
 import SecondaryText from "../../components/SecondaryText";
 
 import useSnackbar from "../../context/SnackbarContext";
-import useTransferMutation from "../../hook/useTransferMutation";
+import useTransferMutation from "../../hooks/useTransferMutation";
 import PrivateLayout from "../../layout/PrivateLayout";
 import AccountService from "../../services/account";
 import UserService from "../../services/user";

@@ -10,6 +10,7 @@ import queryClient from "../lib/query-client";
 import { ThemeProvider } from "../context/ThemeContext";
 
 import "nprogress/nprogress.css";
+import { LocaleProvider } from "../context/LocaleContext";
 
 export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
@@ -28,14 +29,16 @@ export default function App({ Component, pageProps }: AppProps) {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <SnackbarProvider>
-          <ThemeProvider>
-            <Component {...pageProps} />
-          </ThemeProvider>
-        </SnackbarProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <LocaleProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <SnackbarProvider>
+            <ThemeProvider>
+              <Component {...pageProps} />
+            </ThemeProvider>
+          </SnackbarProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </LocaleProvider>
   );
 }

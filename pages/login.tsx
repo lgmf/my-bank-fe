@@ -16,6 +16,7 @@ import * as yup from "yup";
 
 import ProgressButton from "../components/ProgressButton";
 import { useAuth } from "../context/AuthContext";
+import useTranslate from "../hooks/useTranslate";
 
 const validationSchema = yup.object({
   username: yup.string().required(),
@@ -25,6 +26,7 @@ const validationSchema = yup.object({
 export default function Login() {
   const [error, setError] = useState("");
   const { signIn } = useAuth();
+  const t = useTranslate();
 
   const formik = useFormik({
     initialValues: {
@@ -63,7 +65,7 @@ export default function Login() {
       </Head>
 
       <Card>
-        <CardHeader title="My Bank" />
+        <CardHeader title={t("page.login.title")} />
 
         <form id="sign-in-form" onSubmit={formik.handleSubmit}>
           <CardContent
@@ -71,7 +73,7 @@ export default function Login() {
           >
             <TextField
               name="username"
-              label="username"
+              label={t("form.labels.username")}
               value={formik.values.username}
               onChange={formik.handleChange}
               error={Boolean(formik.errors.username)}
@@ -81,7 +83,7 @@ export default function Login() {
             <TextField
               type="password"
               name="password"
-              label="password"
+              label={t("form.labels.password")}
               value={formik.values.password}
               onChange={formik.handleChange}
               error={Boolean(formik.errors.password)}
@@ -99,7 +101,7 @@ export default function Login() {
             variant="contained"
             loading={formik.isSubmitting}
           >
-            Sign In
+            {t("actions.sign_in")}
           </ProgressButton>
         </CardActions>
       </Card>
